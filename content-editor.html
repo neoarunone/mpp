@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MannyPay Content Editor</title>
+  <link rel="stylesheet" href="assets/design-tokens.css">
+  <style>
+    :root{--blue:#1768ef;--ink:#071630;--line:#dbe5f5;--soft:#eef3ff;--muted:#64748b}
+    *{box-sizing:border-box}body{margin:0;font-family:Manrope,Arial,sans-serif;color:var(--ink);background:#f6f8fc}
+    .app{height:100dvh;display:grid;grid-template-rows:64px 1fr}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 20px;border-bottom:1px solid var(--line);background:#fff}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}.brand span{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--blue);color:#fff}
+    .top-actions{display:flex;align-items:center;gap:8px}button,.button{height:36px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 13px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:700 12px Manrope,Arial,sans-serif;cursor:pointer;text-decoration:none}button.primary{border-color:var(--blue);background:var(--blue);color:#fff}button.danger{color:#b42335}
+    .layout{min-height:0;display:grid;grid-template-columns:360px 1fr 390px}
+    aside{min-height:0;overflow:auto;background:#fff;border-right:1px solid var(--line)}.right{border-right:0;border-left:1px solid var(--line)}
+    .panel{padding:16px}.label{display:block;margin:0 0 7px;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    select,input,textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px 11px;font:500 13px Manrope,Arial,sans-serif;color:var(--ink)}textarea{min-height:190px;resize:vertical;line-height:1.45}
+    .hint{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.45}.search{margin-top:14px}
+    .list{display:grid;gap:7px;margin-top:14px}.item{display:grid;grid-template-columns:34px 1fr;gap:8px;width:100%;height:auto;min-height:54px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:left}.item:hover,.item.active{border-color:#9bbcf8;background:#f2f7ff}.item b{font-size:11px}.item small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.3}.tag{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:var(--soft);color:var(--blue);font-size:10px;font-weight:900;text-transform:uppercase}
+    .stage{min-width:0;min-height:0;display:grid;padding:18px;background:#e7ebf2}.frame-wrap{overflow:hidden;border-radius:14px;background:#fff;box-shadow:0 22px 70px rgba(7,22,48,.18)}iframe{width:100%;height:100%;border:0;background:#fff}
+    .field{margin-bottom:14px}.preview-box{min-height:90px;padding:12px;border:1px dashed #b8c7df;border-radius:10px;background:#fbfdff;color:var(--muted);font-size:12px;line-height:1.45}
+    .editor-empty{padding:28px 16px;color:var(--muted);line-height:1.5}.file-input{display:none}.toast{position:fixed;right:18px;bottom:18px;padding:12px 14px;border-radius:999px;background:#071630;color:#fff;font-size:12px;opacity:0;transform:translateY(8px);transition:.2s}.toast.show{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+<div class="app" data-content-editor-ui>
+  <header>
+    <div class="brand"><span>MP</span><div>MannyPay Content Editor<div class="hint" style="margin:0">Safe copy/image editing only</div></div></div>
+    <div class="top-actions">
+      <button id="importBtn" type="button">Import JSON</button>
+      <button id="exportBtn" type="button">Export content-state.json</button>
+      <button id="clearBtn" class="danger" type="button">Reset local edits</button>
+      <a class="button" href="design-system.html">Design Studio</a>
+    </div>
+  </header>
+  <div class="layout">
+    <aside>
+      <div class="panel">
+        <label class="label" for="pagePicker">Page</label>
+        <select id="pagePicker"></select>
+        <p class="hint">Choose a page, then select a text/image item to edit. Layout and styles are locked.</p>
+        <input class="search" id="searchInput" type="search" placeholder="Search content on this page">
+        <div class="list" id="contentList"></div>
+      </div>
+    </aside>
+    <main class="stage">
+      <div class="frame-wrap"><iframe id="previewFrame" src="index.html" title="MannyPay content preview"></iframe></div>
+    </main>
+    <aside class="right">
+      <div class="panel" id="editorPanel"><div class="editor-empty">Select a content item from the left to edit it.</div></div>
+    </aside>
+  </div>
+</div>
+<input id="importInput" class="file-input" type="file" accept="application/json">
+<div class="toast" id="toast"></div>
+<script src="page-data.js?v=8"></script>
+<script>
+(()=>{
+  const STORAGE_KEY='mannypay-content-overrides-v1';
+  const pagePicker=document.getElementById('pagePicker'),frame=document.getElementById('previewFrame'),list=document.getElementById('contentList'),panel=document.getElementById('editorPanel'),search=document.getElementById('searchInput'),toast=document.getElementById('toast');
+  let state=loadState(),items=[],selected=null;
+  function blank(){return{version:'1.0',updatedAt:Date.now(),pages:{}}}
+  function normalizeState(value){return{...blank(),...(value||{}),pages:(value&&typeof value.pages==='object')?value.pages:{}}}
+  function loadState(){try{return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'))}catch{return blank()}}
+  function save(){state.updatedAt=Date.now();localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toastMsg('Saved locally for preview')}
+  function toastMsg(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>toast.classList.remove('show'),1800)}
+  function href(slug){return slug==='home'?'index.html':`inner.html?page=${encodeURIComponent(slug)}`}
+  function currentSlug(){return pagePicker.value}
+  function pageBucket(){return (state.pages[currentSlug()]||(state.pages[currentSlug()]={}))}
+  function isEditable(el){return !el.closest('.site-header,.site-footer,script,style,dialog,[data-content-editor-ui]')&&(el.matches('h1,h2,h3,h4,h5,h6,p,a,button,span,strong,em,b,i,small,label,li,figcaption,summary,blockquote,img'))}
+  function normalize(str){return String(str||'').replace(/\\s+/g,' ').trim()}
+  function scan(){
+    const doc=frame.contentDocument;if(!doc?.body)return;
+    const page=currentSlug();
+    const nodes=[...doc.body.querySelectorAll('h1,h2,h3,h4,h5,h6,p,a,button,span,strong,em,b,i,small,label,li,figcaption,summary,blockquote,img')].filter(isEditable);
+    items=nodes.map((el,index)=>{const id=el.dataset.contentId||(el.dataset.contentId=`${page}-content-${index+1}`),type=el.tagName.toLowerCase(),bucket=pageBucket()[id]||{};return{id,type,el,text:bucket.text??(el.tagName==='IMG'?el.getAttribute('alt')||'':normalize(el.textContent)),href:bucket.href??(el.tagName==='A'?el.getAttribute('href')||'':''),src:bucket.src??(el.tagName==='IMG'?el.getAttribute('src')||'':''),alt:bucket.alt??(el.tagName==='IMG'?el.getAttribute('alt')||'':'')}}).filter(item=>item.type==='img'||item.text);
+    renderList();
+  }
+  function applyToPreview(item){if(!item?.el)return;const saved=pageBucket()[item.id];if(!saved)return;if(item.type==='img'){if(saved.src)item.el.src=saved.src;if(saved.alt!==undefined)item.el.alt=saved.alt}else{if(saved.text!==undefined)item.el.textContent=saved.text;if(item.type==='a'&&saved.href!==undefined)item.el.href=saved.href}}
+  function renderList(){const q=search.value.toLowerCase();list.innerHTML='';items.filter(item=>`${item.type} ${item.text} ${item.src}`.toLowerCase().includes(q)).forEach(item=>{const b=document.createElement('button');b.type='button';b.className=`item${selected?.id===item.id?' active':''}`;b.innerHTML=`<span class="tag">${item.type==='img'?'img':item.type}</span><span><b>${item.type==='img'?(item.alt||'Image'):item.text.slice(0,80)}</b><small>${item.id}</small></span>`;b.onclick=()=>select(item);list.appendChild(b)})}
+  function select(item){selected=item;item.el.scrollIntoView({block:'center',behavior:'smooth'});renderList();renderEditor()}
+  function renderEditor(){if(!selected){panel.innerHTML='<div class="editor-empty">Select a content item from the left to edit it.</div>';return}const item=selected,bucket=pageBucket()[item.id]||{};if(item.type==='img'){panel.innerHTML=`<div class="field"><span class="label">Image source</span><input id="srcInput" value="${escapeHtml(bucket.src??item.src)}"></div><div class="field"><span class="label">Alt text</span><input id="altInput" value="${escapeHtml(bucket.alt??item.alt)}"></div><div class="preview-box">${escapeHtml(item.id)}</div><p class="hint">Paste a Cloudflare/GitHub image URL or existing asset path.</p><button class="primary" id="applyBtn" type="button">Apply image</button>`;document.getElementById('applyBtn').onclick=()=>{pageBucket()[item.id]={...(pageBucket()[item.id]||{}),src:document.getElementById('srcInput').value.trim(),alt:document.getElementById('altInput').value.trim()};applyToPreview(item);save();scan();select(items.find(x=>x.id===item.id)||item)}}else{panel.innerHTML=`<div class="field"><span class="label">${item.type} text</span><textarea id="textInput">${escapeHtml(bucket.text??item.text)}</textarea></div>${item.type==='a'?`<div class="field"><span class="label">Link URL</span><input id="hrefInput" value="${escapeHtml(bucket.href??item.href)}"></div>`:''}<div class="preview-box">${escapeHtml(item.id)}</div><button class="primary" id="applyBtn" type="button">Apply content</button>`;document.getElementById('applyBtn').onclick=()=>{const next={...(pageBucket()[item.id]||{}),text:document.getElementById('textInput').value};if(item.type==='a')next.href=document.getElementById('hrefInput').value.trim();pageBucket()[item.id]=next;applyToPreview(item);save();scan();select(items.find(x=>x.id===item.id)||item)}}}
+  function escapeHtml(str){return String(str||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+  function setupPages(){const pages=window.MANNYPAY_SITE?.pages||{};pagePicker.innerHTML='<option value=\"home\">Homepage</option>'+Object.values(pages).sort((a,b)=>a.group.localeCompare(b.group)||a.title.localeCompare(b.title)).map(p=>`<option value=\"${p.slug}\">${p.group} · ${p.title}</option>`).join('')}
+  pagePicker.onchange=()=>{selected=null;frame.src=href(currentSlug())};
+  frame.onload=()=>setTimeout(scan,350);search.oninput=renderList;
+  document.getElementById('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='content-state.json';a.click();URL.revokeObjectURL(a.href)};
+  document.getElementById('importBtn').onclick=()=>document.getElementById('importInput').click();
+  document.getElementById('importInput').onchange=async event=>{const file=event.target.files[0];if(!file)return;state=JSON.parse(await file.text());save();frame.contentWindow.location.reload();};
+  document.getElementById('clearBtn').onclick=()=>{if(!confirm('Clear local content edits in this browser?'))return;state=blank();localStorage.removeItem(STORAGE_KEY);frame.contentWindow.location.reload();toastMsg('Local content edits cleared')};
+  setupPages();
+})();
+</script>
+</body>
+</html>

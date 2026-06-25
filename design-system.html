@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MannyPay Visual Design Studio</title>
+  <link rel="stylesheet" href="studio.css?v=23">
+</head>
+<body>
+  <div class="studio-shell">
+    <header class="topbar">
+      <a class="studio-brand" href="index.html" target="_blank" title="Open homepage">
+        <span class="brand-mark">MP</span>
+        <span><strong>MannyPay Studio</strong><small>Visual code inspector</small></span>
+      </a>
+
+      <div class="history-actions" aria-label="History controls">
+        <label class="studio-page-picker"><span>Page</span><select id="studioPagePicker" aria-label="Choose page to edit"><option value="home">Homepage</option></select></label>
+        <button class="icon-button" id="undoBtn" type="button" title="Undo (⌘Z)" disabled><span class="material-symbols">undo</span></button>
+        <button class="icon-button" id="redoBtn" type="button" title="Redo (⇧⌘Z)" disabled><span class="material-symbols">redo</span></button>
+        <span class="top-divider"></span>
+        <button class="toolbar-button primary" id="saveBtn" type="button"><span class="material-symbols">save</span>Save changes</button>
+        <div class="annotation-toolbar" id="annotationTools">
+          <button class="toolbar-button" id="annotateBtn" type="button" aria-pressed="false" title="Draw annotations on the page"><span class="material-symbols">draw</span>Annotate</button>
+          <label title="Annotation color"><span>Color</span><input id="annotationColor" type="color" value="#e71d36" aria-label="Annotation color"></label>
+          <label title="Annotation line width"><span>Size</span><select id="annotationWidth" aria-label="Annotation line width"><option value="2">S</option><option value="4" selected>M</option><option value="7">L</option></select></label>
+          <button class="icon-button" id="clearAnnotationsBtn" type="button" title="Clear annotations on this page"><span class="material-symbols">ink_eraser</span></button>
+        </div>
+        <span class="save-state" id="saveState">All changes saved</span>
+      </div>
+
+      <div class="viewport-switch" aria-label="Preview size">
+        <span class="viewport-edit-state" id="viewportEditState">Editing Desktop base</span>
+        <button class="active" type="button" data-viewport="desktop" title="Desktop"><span class="material-symbols">desktop_windows</span></button>
+        <button type="button" data-viewport="tablet" title="Tablet"><span class="material-symbols">tablet_mac</span></button>
+        <button type="button" data-viewport="mobile" title="Mobile"><span class="material-symbols">smartphone</span></button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="navigator-panel">
+        <div class="panel-heading"><div><span>Elements</span><small>Every editable DOM layer</small></div><button class="icon-button small" id="refreshTreeBtn" type="button" title="Refresh navigator"><span class="material-symbols">refresh</span></button></div>
+        <details class="component-panel" open>
+          <summary><span><i class="material-symbols">deployed_code</i>Components</span><i class="material-symbols component-chevron">expand_more</i></summary>
+          <div class="component-library">
+            <div class="component-category"><strong>Global components</strong><div class="add-grid">
+              <button type="button" data-select-component="header"><i class="material-symbols">web_asset</i>Header</button>
+              <button type="button" data-select-component="footer"><i class="material-symbols">vertical_align_bottom</i>Footer</button>
+            </div></div>
+            <div class="component-category"><strong>Reusable sections</strong><div class="add-grid">
+              <button type="button" data-add-component="hero-split"><i class="material-symbols">view_carousel</i>Hero split</button>
+              <button type="button" data-add-component="banner-cta"><i class="material-symbols">campaign</i>CTA banner</button>
+              <button type="button" data-add-component="feature-grid"><i class="material-symbols">grid_view</i>Feature grid</button>
+              <button type="button" data-add-component="testimonial"><i class="material-symbols">reviews</i>Testimonial</button>
+              <button type="button" data-add-component="form-band"><i class="material-symbols">dynamic_form</i>Form band</button>
+              <button type="button" data-add-component="logo-cloud"><i class="material-symbols">hub</i>Logo cloud</button>
+            </div></div>
+          </div>
+          <p class="add-hint" id="componentHint">Header and footer are global site components. Reusable sections can be inserted into any page.</p>
+        </details>
+        <details class="add-panel">
+          <summary><span><i class="material-symbols">add_box</i>Add elements</span><i class="material-symbols add-chevron">expand_more</i></summary>
+          <div class="add-library">
+            <div class="add-category"><strong>Layout</strong><div class="add-grid">
+              <button type="button" data-add-element="section"><i class="material-symbols">view_agenda</i>Section</button>
+              <button type="button" data-add-element="container"><i class="material-symbols">crop_square</i>Container</button>
+              <button type="button" data-add-element="div"><i class="material-symbols">select_all</i>Div block</button>
+              <button type="button" data-add-element="flex"><i class="material-symbols">view_week</i>Flex</button>
+              <button type="button" data-add-element="grid"><i class="material-symbols">grid_view</i>Grid</button>
+              <button type="button" data-add-element="columns"><i class="material-symbols">view_column</i>Columns</button>
+              <button type="button" data-add-element="spacer"><i class="material-symbols">height</i>Spacer</button>
+              <button type="button" data-add-element="divider"><i class="material-symbols">horizontal_rule</i>Divider</button>
+            </div></div>
+            <div class="add-category"><strong>Typography</strong><div class="add-grid">
+              <button type="button" data-add-element="heading"><i class="material-symbols">title</i>Heading</button>
+              <button type="button" data-add-element="paragraph"><i class="material-symbols">notes</i>Paragraph</button>
+              <button type="button" data-add-element="text"><i class="material-symbols">text_fields</i>Text</button>
+              <button type="button" data-add-element="richtext"><i class="material-symbols">article</i>Rich text</button>
+              <button type="button" data-add-element="blockquote"><i class="material-symbols">format_quote</i>Quote</button>
+              <button type="button" data-add-element="list"><i class="material-symbols">format_list_bulleted</i>List</button>
+            </div></div>
+            <div class="add-category"><strong>Links &amp; media</strong><div class="add-grid">
+              <button type="button" data-add-element="link"><i class="material-symbols">link</i>Text link</button>
+              <button type="button" data-add-element="button"><i class="material-symbols">smart_button</i>Button</button>
+              <button type="button" data-add-element="linkblock"><i class="material-symbols">link_blocks</i>Link block</button>
+              <button type="button" data-add-element="image"><i class="material-symbols">image</i>Image</button>
+              <button type="button" data-add-element="icon"><i class="material-symbols">star</i>Icon</button>
+              <button type="button" data-add-element="video"><i class="material-symbols">play_circle</i>Video</button>
+              <button type="button" data-add-element="figure"><i class="material-symbols">photo_library</i>Figure</button>
+              <button type="button" data-add-element="embed"><i class="material-symbols">code</i>Embed</button>
+            </div></div>
+            <div class="add-category"><strong>Forms</strong><div class="add-grid">
+              <button type="button" data-add-element="form"><i class="material-symbols">dynamic_form</i>Form</button>
+              <button type="button" data-add-element="label"><i class="material-symbols">label</i>Label</button>
+              <button type="button" data-add-element="input"><i class="material-symbols">input</i>Input</button>
+              <button type="button" data-add-element="textarea"><i class="material-symbols">text_ad</i>Textarea</button>
+              <button type="button" data-add-element="select"><i class="material-symbols">arrow_drop_down_circle</i>Select</button>
+              <button type="button" data-add-element="checkbox"><i class="material-symbols">check_box</i>Checkbox</button>
+              <button type="button" data-add-element="radio"><i class="material-symbols">radio_button_checked</i>Radio</button>
+              <button type="button" data-add-element="submit"><i class="material-symbols">send</i>Submit</button>
+            </div></div>
+            <div class="add-category"><strong>Components</strong><div class="add-grid">
+              <button type="button" data-add-element="card"><i class="material-symbols">dashboard</i>Card</button>
+              <button type="button" data-add-element="navbar"><i class="material-symbols">menu</i>Navbar</button>
+              <button type="button" data-add-element="hero"><i class="material-symbols">web_asset</i>Hero</button>
+              <button type="button" data-add-element="accordion"><i class="material-symbols">expand_circle_down</i>Accordion</button>
+            </div></div>
+          </div>
+          <p class="add-hint" id="addElementHint">Drag an element onto the page, or click to add it to the selection.</p>
+        </details>
+        <details class="icon-library-panel">
+          <summary><span><i class="material-symbols">symbols</i>Icon library</span><i class="material-symbols icon-chevron">expand_more</i></summary>
+          <div class="icon-library-tools">
+            <label class="icon-search"><i class="material-symbols">search</i><input id="iconLibrarySearch" type="search" placeholder="Search icons" aria-label="Search icon library"></label>
+            <label><span>Weight</span><select id="iconLibraryWeight" aria-label="Icon weight"><option value="300">Light</option><option value="400" selected>Regular</option><option value="500">Medium</option><option value="600">Bold</option><option value="700">Heavy</option></select></label>
+            <label class="icon-fill-toggle"><input id="iconLibraryFill" type="checkbox"><span>Filled</span></label>
+          </div>
+          <div class="icon-library-grid" id="iconLibraryGrid" aria-label="Drag and drop icon library"></div>
+          <p class="icon-library-hint">Drag an icon onto the page, or click to add it to the selected element.</p>
+        </details>
+        <details class="media-library-panel" open>
+          <summary><span><i class="material-symbols">perm_media</i>Media CMS</span><i class="material-symbols media-chevron">expand_more</i></summary>
+          <div class="media-library-tools">
+            <label class="media-search"><i class="material-symbols">search</i><input id="mediaLibrarySearch" type="search" placeholder="Search images" aria-label="Search image library"></label>
+            <button class="media-upload-button" id="mediaUploadBtn" type="button"><i class="material-symbols">upload</i>Upload images</button>
+            <div class="media-bulk-actions"><button id="mediaSelectBtn" type="button"><i class="material-symbols">checklist</i>Select unwanted</button><button id="mediaSelectAllBtn" type="button" hidden>Select all</button><button id="mediaRemoveSelectedBtn" type="button" hidden disabled>Remove selected</button></div>
+            <input id="mediaUploadInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" multiple hidden>
+          </div>
+          <div class="media-library-grid" id="mediaLibraryGrid" aria-label="Image content management library"></div>
+          <p class="media-library-hint" id="mediaLibraryHint">Select an image on the page to replace it, or drag media onto the canvas.</p>
+        </details>
+        <div class="navigator-tools"><span class="material-symbols">search</span><input id="elementSearch" type="search" placeholder="Filter elements, classes or text"></div>
+        <div class="navigator-tree" id="navigatorTree" role="tree"></div>
+        <div class="navigator-footer">
+          <button class="secondary-action" id="resetBtn" type="button"><span class="material-symbols">restart_alt</span>Reset edits</button>
+          <button class="secondary-action" id="exportBtn" type="button"><span class="material-symbols">download</span>Export overrides</button>
+        </div>
+      </aside>
+
+      <div class="panel-resizer panel-resizer-left" id="leftPanelResizer" role="separator" aria-label="Resize elements panel" aria-orientation="vertical" tabindex="0"></div>
+
+      <section class="canvas-stage" aria-label="Editable homepage canvas">
+        <div class="canvas-help"><span class="material-symbols">ads_click</span>Click to inspect. Double-click text to edit. Use Annotate to draw notes.</div>
+        <div class="frame-shell desktop" id="frameShell">
+          <iframe id="pageFrame" src="index.html?studio=1" title="Editable MannyPay homepage"></iframe>
+        </div>
+      </section>
+
+      <div class="panel-resizer panel-resizer-right" id="rightPanelResizer" role="separator" aria-label="Resize inspector panel" aria-orientation="vertical" tabindex="0"></div>
+
+      <aside class="inspector-panel">
+        <div class="selection-head">
+          <span class="element-icon material-symbols" id="elementIcon">select</span>
+          <div><strong id="elementName">Select an element</strong><small id="elementSelector">Click anything in the canvas</small></div>
+          <div class="selection-nav" aria-label="Navigate element hierarchy">
+            <button type="button" id="selectParentBtn" title="Select parent"><span class="material-symbols">arrow_upward</span></button>
+            <button type="button" id="selectPrevBtn" title="Previous sibling"><span class="material-symbols">arrow_back</span></button>
+            <button type="button" id="selectNextBtn" title="Next sibling"><span class="material-symbols">arrow_forward</span></button>
+            <button type="button" id="selectChildBtn" title="Select first child"><span class="material-symbols">arrow_downward</span></button>
+          </div>
+        </div>
+
+        <div class="scope-control">
+          <label>Editing scope</label>
+          <div class="segmented" id="scopeControl">
+            <button class="active" type="button" data-scope="local">Local</button>
+            <button type="button" data-scope="section">Section</button>
+            <button type="button" data-scope="global">Site-wide</button>
+          </div>
+          <p id="scopeHint">Changes apply only to the selected element.</p>
+        </div>
+
+        <div class="state-control">
+          <label>Interaction state</label>
+          <div class="segmented" id="stateControl">
+            <button class="active" type="button" data-state="normal">Normal</button>
+            <button type="button" data-state="hover">Hover</button>
+          </div>
+          <p id="stateHint">Editing the element’s normal appearance.</p>
+        </div>
+
+        <div class="empty-inspector" id="emptyInspector"><span class="material-symbols">touch_app</span><h2>Nothing selected</h2><p>Select an element on the homepage to see its applicable CSS controls.</p></div>
+
+        <form class="inspector-form" id="inspectorForm" hidden>
+          <details open>
+            <summary><span><i class="material-symbols">edit_note</i>Content</span><i class="material-symbols chevron">expand_more</i></summary>
+            <div class="detail-body">
+              <label class="field full"><span>Text content</span><textarea id="textContent" rows="3" placeholder="Select a text element"></textarea><small id="textHelp">Edit text here or double-click it on the canvas.</small></label>
+            </div>
+          </details>
+
+          <details id="attributesPanel">
+            <summary><span><i class="material-symbols">data_object</i>Element attributes</span><i class="material-symbols chevron">expand_more</i></summary>
+            <div class="detail-body field-grid">
+              <label class="field full"><span>Class names</span><input data-attr="class" id="classNameInput" list="classSuggestions" type="text" autocomplete="off" placeholder="button button-primary"><datalist id="classSuggestions"></datalist><small>Start typing to reuse an existing class, or enter a new class name.</small></label>
+              <label class="field full"><span>Element ID</span><input data-attr="id" type="text" placeholder="section-id"></label>
+              <label class="field full attr-link"><span>Link URL</span><input data-attr="href" type="text" placeholder="https:// or #section"></label>
+              <label class="field attr-link"><span>Link target</span><select data-attr="target"><option value="">Same tab</option><option value="_blank">New tab</option></select></label>
+              <label class="field full attr-image"><span>Image source</span><input data-attr="src" type="text" placeholder="assets/images/..."></label>
+              <label class="field full attr-image"><span>Alt text</span><input data-attr="alt" type="text" placeholder="Describe the image"></label>
+              <label class="field full attr-accessible"><span>ARIA label</span><input data-attr="aria-label" type="text" placeholder="Accessible label"></label>
+              <div class="element-clipboard full">
+                <div class="subheading">Element clipboard</div>
+                <div class="clipboard-grid">
+                  <button type="button" id="copyElementBtn"><i class="material-symbols">content_copy</i>Copy</button>
+                  <button type="button" id="duplicateElementBtn"><i class="material-symbols">control_point_duplicate</i>Duplicate</button>
+                  <button type="button" id="pasteInsideBtn" disabled><i class="material-symbols">move_to_inbox</i>Paste inside</button>
+                  <button type="button" id="pasteAfterBtn" disabled><i class="material-symbols">playlist_add</i>Paste after</button>
+                  <button class="danger-action" type="button" id="deleteElementBtn"><i class="material-symbols">delete</i>Delete element</button>
+                </div>
+                <small id="clipboardHint">Copy an element to enable paste actions.</small>
+              </div>
+            </div>
+          </details>
+
+          <details open>
+            <summary><span><i class="material-symbols">text_fields</i>Typography</span><i class="material-symbols chevron">expand_more</i></summary>
+            <div class="detail-body field-grid">
+              <label class="field full"><span>Font family</span><select data-prop="font-family" id="fontFamily"><option value="">Inherited</option><option value="Manrope">Manrope</option><option value="Satoshi">Satoshi</option><option value="Arial">Arial</option><option value="Georgia">Georgia</option></select></label>
+              <label class="field"><span>Size</span><input data-prop="font-size" type="text" placeholder="16px"></label>
+              <label class="field"><span>Weight</span><select data-prop="font-weight"><option value="">Inherited</option><option value="300">300</option><option value="400">400</option><option value="500">500</option><option value="600">600</option><option value="700">700</option><option value="800">800</option></select></label>
+              <div class="icon-font-controls full" id="iconFontControls" hidden>
+                <div class="subheading">Material Symbol</div>
+                <div class="icon-picker-row">
+                  <span class="icon-preview material-symbols" id="iconPreview" aria-hidden="true">star</span>
+                  <label class="field"><span>Icon name</span><input id="iconName" type="text" list="materialIconOptions" autocomplete="off" placeholder="Search or type an icon name"><small>Choose a suggestion or type any Material Symbol name.</small></label>
+                </div>
+                <label class="field"><span>Icon weight <output id="iconWeightValue">450</output></span><input data-prop="--icon-weight" id="iconWeight" type="range" min="100" max="700" step="50" value="450"></label>
+                <datalist id="materialIconOptions">
+                  <option value="account_balance_wallet"><option value="add"><option value="arrow_back"><option value="arrow_forward"><option value="arrow_outward"><option value="bolt"><option value="business_center"><option value="check"><option value="check_circle"><option value="chevron_right"><option value="close"><option value="contactless"><option value="credit_card"><option value="dashboard"><option value="diamond"><option value="download"><option value="edit"><option value="favorite"><option value="flight"><option value="genetics"><option value="language"><option value="lock"><option value="menu"><option value="payments"><option value="person"><option value="person_add"><option value="point_of_sale"><option value="psychiatry"><option value="qr_code"><option value="rocket_launch"><option value="save"><option value="search"><option value="security"><option value="smartphone"><option value="star"><option value="storefront"><option value="stethoscope"><option value="target"><option value="touch_app"><option value="trending_up"><option value="turn_right"><option value="verified"><option value="wallet">
+                </datalist>
+              </div>
+              <label class="field"><span>Line height</span><input data-prop="line-height" type="text" placeholder="1.5"></label>
+              <label class="field"><span>Letter spacing</span><input data-prop="letter-spacing" type="text" placeholder="0px"></label>
+              <label class="field full"><span>Text align</span><select data-prop="text-align"><option value="">Inherited</option><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option><option value="justify">Justify</option></select></label>
+              <label class="field"><span>Font style</span><select data-prop="font-style"><option value="">Inherited</option><option value="normal">Normal</option><option value="italic">Italic</option><option value="oblique">Oblique</option></select></label>
+              <label class="field"><span>Text transform</span><select data-prop="text-transform"><option value="">Inherited</option><option value="none">None</option><option value="uppercase">Uppercase</option><option value="lowercase">Lowercase</option><option value="capitalize">Capitalize</option></select></label>
+              <label class="field"><span>Decoration</span><select data-prop="text-decoration-line"><option value="">None</option><option value="underline">Underline</option><option value="line-through">Strike through</option><option value="overline">Overline</option></select></label>
+              <label class="field"><span>White space</span><select data-prop="white-space"><option value="">Default</option><option value="normal">Wrap</option><option value="nowrap">No wrap</option><option value="pre-wrap">Preserve &amp; wrap</option></select></label>
+              <label class="field full color-field"><span>Text color</span><div><input data-color-prop="color" type="color"><input data-prop="color" type="text" placeholder="#071630"><button type="button" data-clear="color" title="Clear text color"><i class="material-symbols">close</i></button></div></label>
+            </div>
+          </details>
+
+          <details open>
+            <summary><span><i class="material-symbols">dashboard</i>Layout</span><i class="material-symbols chevron">expand_more</i></summary>
+            <div class="detail-body field-grid">
+              <label class="field full"><span>Display</span><select data-prop="display" id="displayControl"><option value="">Stylesheet default</option><option value="block">Block</option><option value="inline-block">Inline block</option><option value="inline">Inline</option><option value="flex">Flex</option><option value="inline-flex">Inline flex</option><option value="grid">Grid</option><option value="none">None</option></select></label>
+              <label class="field"><span>Width</span><input data-prop="width" type="text" placeholder="auto"></label>
+              <label class="field"><span>Height</span><input data-prop="height" type="text" placeholder="auto"></label>
+              <label class="field"><span>Min width</span><input data-prop="min-width" type="text" placeholder="0px"></label>
+              <label class="field"><span>Max width</span><input data-prop="max-width" type="text" placeholder="none"></label>
+              <label class="field"><span>Min height</span><input data-prop="min-height" type="text" placeholder="0px"></label>
+              <label class="field"><span>Max height</span><input data-prop="max-height" type="text" placeholder="none"></label>
+              <label class="field"><span>Box sizing</span><select data-prop="box-sizing"><option value="">Default</option><option value="border-box">Border box</option><option value="content-box">Content box</option></select></label>
+              <label class="field"><span>Overflow</span><select data-prop="overflow"><option value="">Default</option><option value="visible">Visible</option><option value="hidden">Hidden</option><option value="auto">Auto</option><option value="scroll">Scroll</option><option value="clip">Clip</option></select></label>
+              <label class="field full"><span>Position</span><select data-prop="position"><option value="">Stylesheet default</option><option value="static">Static</option><option value="relative">Relative</option><option value="absolute">Absolute</option><option value="sticky">Sticky</option><option value="fixed">Fixed</option></select></label>
+              <label class="field"><span>Top</span><input data-prop="top" type="text" placeholder="auto"></label><label class="field"><span>Right</span><input data-prop="right" type="text" placeholder="auto"></label><label class="field"><span>Bottom</span><input data-prop="bottom" type="text" placeholder="auto"></label><label class="field"><span>Left</span><input data-prop="left" type="text" placeholder="auto"></label>
+              <label class="field full"><span>Z-index</span><input data-prop="z-index" type="text" placeholder="auto"></label>
+            </div>
+            <div class="detail-body field-grid conditional" id="flexControls">
+              <div class="subheading full">Flex properties</div>
+              <label class="field"><span>Direction</span><select data-prop="flex-direction"><option value="">Default</option><option value="row">Row</option><option value="column">Column</option><option value="row-reverse">Row reverse</option><option value="column-reverse">Column reverse</option></select></label>
+              <label class="field"><span>Wrap</span><select data-prop="flex-wrap"><option value="">Default</option><option value="nowrap">No wrap</option><option value="wrap">Wrap</option><option value="wrap-reverse">Wrap reverse</option></select></label>
+              <label class="field"><span>Justify</span><select data-prop="justify-content"><option value="">Default</option><option value="flex-start">Start</option><option value="center">Center</option><option value="flex-end">End</option><option value="space-between">Space between</option><option value="space-around">Space around</option><option value="space-evenly">Space evenly</option></select></label>
+              <label class="field"><span>Align</span><select data-prop="align-items"><option value="">Default</option><option value="stretch">Stretch</option><option value="flex-start">Start</option><option value="center">Center</option><option value="flex-end">End</option><option value="baseline">Baseline</option></select></label>
+              <label class="field full"><span>Gap</span><input data-prop="gap" type="text" placeholder="0px"></label>
+              <div class="subheading full">Selected flex child</div>
+              <label class="field"><span>Grow</span><input data-prop="flex-grow" type="number" min="0" step="0.1" placeholder="0"></label><label class="field"><span>Shrink</span><input data-prop="flex-shrink" type="number" min="0" step="0.1" placeholder="1"></label>
+              <label class="field"><span>Basis</span><input data-prop="flex-basis" type="text" placeholder="auto"></label><label class="field"><span>Order</span><input data-prop="order" type="number" placeholder="0"></label>
+              <label class="field full"><span>Align self</span><select data-prop="align-self"><option value="">Auto</option><option value="stretch">Stretch</option><option value="flex-start">Start</option><option value="center">Center</option><option value="flex-end">End</option></select></label>
+            </div>
+            <div class="detail-body field-grid conditional" id="gridControls">
+              <div class="subheading full">Grid properties</div>
+              <label class="field full"><span>Columns</span><input data-prop="grid-template-columns" type="text" placeholder="repeat(3, 1fr)"></label>
+              <label class="field"><span>Column gap</span><input data-prop="column-gap" type="text" placeholder="20px"></label>
+              <label class="field"><span>Row gap</span><input data-prop="row-gap" type="text" placeholder="20px"></label>
+              <label class="field"><span>Grid column</span><input data-prop="grid-column" type="text" placeholder="auto / span 1"></label><label class="field"><span>Grid row</span><input data-prop="grid-row" type="text" placeholder="auto / span 1"></label>
+            </div>
+          </details>
+
+          <details>
+            <summary><span><i class="material-symbols">space_bar</i>Spacing</span><i class="material-symbols chevron">expand_more</i></summary>
+            <div class="detail-body field-grid quad-grid">
+              <div class="subheading full">Padding</div>
+              <label class="field"><span>Top</span><input data-prop="padding-top" type="text" placeholder="0px"></label><label class="field"><span>Right</span><input data-prop="padding-right" type="text" placeholder="0px"></label><label class="field"><span>Bottom</span><input data-prop="padding-bottom" type="text" placeholder="0px"></label><label class="field"><span>Left</span><input data-prop="padding-left" type="text" placeholder="0px"></label>
+              <div class="subheading full">Margin</div>
+              <label class="field"><span>Top</span><input data-prop="margin-top" type="text" placeholder="0px"></label><label class="field"><span>Right</span><input data-prop="margin-right" type="text" placeholder="0px"></label><label class="field"><span>Bottom</span><input data-prop="margin-bottom" type="text" placeholder="0px"></label><label class="field"><span>Left</span><input data-prop="margin-left" type="text" placeholder="0px"></label>
+            </div>
+          </details>
+
+          <details>
+            <summary><span><i class="material-symbols">palette</i>Appearance</span><i class="material-symbols chevron">expand_more</i></summary>
+            <div class="detail-body field-grid">
+              <label class="field full color-field"><span>Background</span><div><input data-color-prop="background-color" type="color"><input data-prop="background-color" type="text" placeholder="transparent"><button type="button" data-clear="background-color"><i class="material-symbols">close</i></button></div></label>
+              <div class="background-image-controls full" id="backgroundImageControls" hidden>
+                <div class="background-image-actions">
+                  <button type="button" id="backgroundUploadBtn"><i class="material-symbols">upload</i>Upload background</button>
+                  <button type="button" id="backgroundChooseCmsBtn"><i class="material-symbols">perm_media</i>Choose from CMS</button>
+                  <button type="button" id="backgroundClearBtn"><i class="material-symbols">hide_image</i>Remove</button>
+                  <input id="backgroundUploadInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden>
+                </div>
+                <p class="background-breakpoint-hint" id="backgroundBreakpointHint">This image applies to the Desktop base.</p>
+                <label class="field full"><span>Background image</span><input data-prop="background-image" type="text" placeholder="url(...)" readonly></label>
+                <div class="field-grid">
+                  <label class="field"><span>Size</span><select data-prop="background-size"><option value="">Auto</option><option value="cover">Cover</option><option value="contain">Contain</option><option value="100% 100%">Stretch</option></select></label>
+                  <label class="field full"><span>Repeat</span><select data-prop="background-repeat"><option value="no-repeat">No repeat</option><option value="repeat">Repeat</option><option value="repeat-x">Repeat horizontally</option><option value="repeat-y">Repeat vertically</option></select></label>
+                </div>
+                <div class="background-position-editor">
+                  <span class="background-position-label">Position anchor</span>
+                  <div class="background-anchor-grid" aria-label="Background position presets">
+                    <button type="button" data-bg-anchor="0% 0%" title="Top left"></button><button type="button" data-bg-anchor="50% 0%" title="Top center"></button><button type="button" data-bg-anchor="100% 0%" title="Top right"></button>
+                    <button type="button" data-bg-anchor="0% 50%" title="Center left"></button><button type="button" data-bg-anchor="50% 50%" title="Center"></button><button type="button" data-bg-anchor="100% 50%" title="Center right"></button>
+                    <button type="button" data-bg-anchor="0% 100%" title="Bottom left"></button><button type="button" data-bg-anchor="50% 100%" title="Bottom center"></button><button type="button" data-bg-anchor="100% 100%" title="Bottom right"></button>
+                  </div>
+                  <div class="background-axis-grid">
+                    <label><span>X</span><input id="backgroundPositionX" type="number" step="1" value="50"><select id="backgroundPositionXUnit"><option value="%">%</option><option value="px">px</option></select></label>
+                    <label><span>Y</span><input id="backgroundPositionY" type="number" step="1" value="50"><select id="backgroundPositionYUnit"><option value="%">%</option><option value="px">px</option></select></label>
+                  </div>
+                </div>
+              </div>
+              <label class="field full color-field"><span>Border color</span><div><input data-color-prop="border-color" type="color"><input data-prop="border-color" type="text" placeholder="#DBE1EB"><button type="button" data-clear="border-color"><i class="material-symbols">close</i></button></div></label>
+              <label class="field"><span>Border width</span><input data-prop="border-width" type="text" placeholder="0px"></label>
+              <label class="field"><span>Border radius</span><input data-prop="border-radius" type="text" placeholder="0px"></label>
+              <label class="field"><span>Border style</span><select data-prop="border-style"><option value="">Default</option><option value="none">None</option><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option><option value="double">Double</option></select></label>
+              <label class="field"><span>Cursor</span><select data-prop="cursor"><option value="">Default</option><option value="auto">Auto</option><option value="default">Arrow</option><option value="pointer">Pointer</option><option value="text">Text</option><option value="grab">Grab</option><option value="not-allowed">Not allowed</option></select></label>
+              <label class="field full"><span>Box shadow</span><input data-prop="box-shadow" type="text" placeholder="0 12px 30px rgba(0,0,0,.15)"></label>
+              <label class="field full"><span>Filter</span><input data-prop="filter" type="text" placeholder="blur(0px) brightness(1)"></label>
+              <label class="field full"><span>Opacity</span><input data-prop="opacity" type="number" min="0" max="1" step="0.05" placeholder="1"></label>
+            </div>
+          </details>
+
+          <details>
+            <summary><span><i class="material-symbols">animation</i>Transform &amp; motion</span><i class="material-symbols chevron">expand_more</i></summary>
+            <div class="detail-body field-grid">
+              <label class="field full"><span>Transform</span><input data-prop="transform" type="text" placeholder="translate(0, 0) rotate(0deg) scale(1)"></label>
+              <label class="field full"><span>Transform origin</span><input data-prop="transform-origin" type="text" placeholder="50% 50%"></label>
+              <label class="field full"><span>Transition</span><input data-prop="transition" type="text" placeholder="all 200ms ease"></label>
+              <label class="field full"><span>Will change</span><select data-prop="will-change"><option value="">Auto</option><option value="transform">Transform</option><option value="opacity">Opacity</option><option value="scroll-position">Scroll position</option></select></label>
+            </div>
+          </details>
+
+          <details open>
+            <summary><span><i class="material-symbols">auto_awesome</i>Hover effects</span><i class="material-symbols chevron">expand_more</i></summary>
+            <div class="detail-body">
+              <p class="panel-note">Choose a starting effect, then switch to Hover and fine-tune any property above.</p>
+              <div class="preset-grid">
+                <button type="button" data-hover-preset="lift"><i class="material-symbols">vertical_align_top</i>Lift</button>
+                <button type="button" data-hover-preset="scale"><i class="material-symbols">zoom_out_map</i>Scale</button>
+                <button type="button" data-hover-preset="glow"><i class="material-symbols">flare</i>Glow</button>
+                <button type="button" data-hover-preset="fade"><i class="material-symbols">opacity</i>Fade</button>
+                <button type="button" data-hover-preset="blue"><i class="material-symbols">palette</i>Brand blue</button>
+                <button type="button" data-hover-preset="clear"><i class="material-symbols">format_clear</i>Clear hover</button>
+              </div>
+            </div>
+          </details>
+
+          <div class="inspector-actions"><button class="secondary-action" id="clearElementBtn" type="button"><span class="material-symbols">format_clear</span>Clear element edits</button></div>
+        </form>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="page-data.js?v=8"></script>
+  <script src="studio.js?v=51"></script>
+</body>
+</html>
